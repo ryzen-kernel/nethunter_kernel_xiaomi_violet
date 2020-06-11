@@ -112,17 +112,14 @@ struct wmi *ath9k_init_wmi(struct ath9k_htc_priv *priv)
 	return wmi;
 }
 
-void ath9k_stop_wmi(struct ath9k_htc_priv *priv)
+void ath9k_deinit_wmi(struct ath9k_htc_priv *priv)
 {
 	struct wmi *wmi = priv->wmi;
 
 	mutex_lock(&wmi->op_mutex);
 	wmi->stopped = true;
 	mutex_unlock(&wmi->op_mutex);
-}
 
-void ath9k_destoy_wmi(struct ath9k_htc_priv *priv)
-{
 	kfree(priv->wmi);
 }
 
@@ -264,7 +261,7 @@ int ath9k_wmi_connect(struct htc_target *htc, struct wmi *wmi,
 	connect.ep_callbacks.rx = ath9k_wmi_ctrl_rx;
 	connect.service_id = WMI_CONTROL_SVC;
 
-	ret = htc_connect_service_hst(htc, &connect, &wmi->ctrl_epid);
+	ret = htc_connect_service(htc, &connect, &wmi->ctrl_epid);
 	if (ret)
 		return ret;
 
@@ -338,7 +335,6 @@ int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
 		ath_dbg(common, WMI, "Timeout waiting for WMI command: %s\n",
 			wmi_cmd_to_name(cmd_id));
 		mutex_unlock(&wmi->op_mutex);
-		kfree_skb(skb);
 		return -ETIMEDOUT;
 	}
 
