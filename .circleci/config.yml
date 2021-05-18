@@ -1,0 +1,19 @@
+version: 2.1
+jobs:
+  compile:
+   docker:
+      - image: ubuntu:20.04
+   steps:
+      - run:
+          command: |
+           export DEBIAN_FRONTEND=noninteractive
+           apt-get -y update && apt-get -y upgrade && apt-get -y install bc build-essential zip gcc clang libc6 curl libstdc++6 git wget libssl-dev zstd ccache python3 python-is-python3 openjdk-8-jdk 
+           ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+           git clone https://github.com/Mayankgaj/MsM-4.14-RyZeN-.git --depth=1 -b R msm
+           cd msm
+           source kernel.sh
+workflows:
+  version: 2.1
+  cooking:
+    jobs:
+      - compile
