@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0
 VERSION = 4
 PATCHLEVEL = 14
-SUBLEVEL = 240
+SUBLEVEL = 241
 EXTRAVERSION =
 NAME = Petit Gorille
 
@@ -507,13 +507,12 @@ endif
 ifneq ($(GCC_TOOLCHAIN),)
 CLANG_FLAGS	+= --gcc-toolchain=$(GCC_TOOLCHAIN)
 endif
-CLANG_FLAGS	+= -no-integrated-as
 CLANG_FLAGS	+= -Werror=unknown-warning-option
 CLANG_FLAGS	+= $(call cc-option, -Wno-misleading-indentation)
 CLANG_FLAGS	+= $(call cc-option, -Wno-bool-operation)
 CLANG_FLAGS	+= $(call cc-option, -Wno-unsequenced)
 KBUILD_CFLAGS	+= $(CLANG_FLAGS)
-KBUILD_AFLAGS	+= $(CLANG_FLAGS)
+KBUILD_AFLAGS	+= $(CLANG_FLAGS) -no-integrated-as
 export CLANG_FLAGS
 ifeq ($(ld-name),lld)
 KBUILD_CFLAGS += -fuse-ld=lld
@@ -1026,6 +1025,15 @@ KBUILD_CFLAGS   += $(call cc-option,-Werror=designated-init)
 
 # change __FILE__ to the relative path from the srctree
 KBUILD_CFLAGS	+= $(call cc-option,-fmacro-prefix-map=$(srctree)/=)
+
+# Variable Length Arrays (VLAs) Detection
+# Variable Length Arrays (VLAs) should not be used anywhere in the kernel
+ifdef CONFIG_VLA_WARN_ON_DETECT
+KBUILD_CFLAGS += $(call cc-option,-Wvla)
+endif
+ifdef CONFIG_VLA_ERROR_ON_DETECT
+KBUILD_CFLAGS    += -Werror=vla
+endif
 
 # use the deterministic mode of AR if available
 KBUILD_ARFLAGS := $(call ar-option,D)

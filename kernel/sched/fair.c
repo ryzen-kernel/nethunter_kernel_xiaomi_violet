@@ -194,13 +194,13 @@ unsigned int capacity_margin				= 1280;
 
 /* Migration margins */
 unsigned int sysctl_sched_capacity_margin_up[MAX_MARGIN_LEVELS] = {
-			[0 ... MAX_MARGIN_LEVELS-1] = 1078}; /* ~5% margin */
+			[0 ... MAX_MARGIN_LEVELS-1] = 1384}; /* ~26% margin */
 unsigned int sysctl_sched_capacity_margin_down[MAX_MARGIN_LEVELS] = {
-			[0 ... MAX_MARGIN_LEVELS-1] = 1205}; /* ~15% margin */
+			[0 ... MAX_MARGIN_LEVELS-1] = 2695}; /* ~62% margin */
 unsigned int sched_capacity_margin_up[NR_CPUS] = {
-			[0 ... NR_CPUS-1] = 1078}; /* ~5% margin */
+			[0 ... NR_CPUS-1] = 1384}; /* ~26% margin */
 unsigned int sched_capacity_margin_down[NR_CPUS] = {
-			[0 ... NR_CPUS-1] = 1205}; /* ~15% margin */
+			[0 ... NR_CPUS-1] = 2695}; /* ~62% margin */
 unsigned int sysctl_sched_capacity_margin_up_boosted[MAX_MARGIN_LEVELS] = {
 			[0 ... MAX_MARGIN_LEVELS-1] = 4096}; /* ~75% margin */
 unsigned int sysctl_sched_capacity_margin_down_boosted[MAX_MARGIN_LEVELS] = {
@@ -4880,7 +4880,7 @@ static const u64 cfs_bandwidth_slack_period = 5 * NSEC_PER_MSEC;
 static int runtime_refresh_within(struct cfs_bandwidth *cfs_b, u64 min_expire)
 {
 	struct hrtimer *refresh_timer = &cfs_b->period_timer;
-	u64 remaining;
+	s64 remaining;
 
 	/* if the call-back is running a quota refresh is already occurring */
 	if (hrtimer_callback_running(refresh_timer))
@@ -4888,7 +4888,7 @@ static int runtime_refresh_within(struct cfs_bandwidth *cfs_b, u64 min_expire)
 
 	/* is a quota refresh about to occur? */
 	remaining = ktime_to_ns(hrtimer_expires_remaining(refresh_timer));
-	if (remaining < min_expire)
+	if (remaining < (s64)min_expire)
 		return 1;
 
 	return 0;
