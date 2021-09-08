@@ -45,7 +45,7 @@ KERNEL_DIR="$(pwd)"
 BASEDIR="$(basename "$KERNEL_DIR")"
 
 # The name of the Kernel, to name the ZIP
-ZIPNAME="R Y Z E N"
+ZIPNAME="RYZEN"
 
 # Build Author
 # Take care, it should be a universal and most probably, case-sensitive
@@ -356,7 +356,7 @@ gen_zip() {
 	fi
 
 	## Prepare a final zip variable
-	ZIP_FINAL="{"$ZIPNAME"}-$DEVICE-$DATE"
+	ZIP_FINAL="$ZIPNAME-$DEVICE-$DATE"
 
 	if [ $SIGN = 1 ]
 	then
